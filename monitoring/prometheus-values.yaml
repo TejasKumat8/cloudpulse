@@ -1,0 +1,24 @@
+# kube-prometheus-stack custom values for CloudPulse observability
+grafana:
+  enabled: true
+  adminPassword: "admin"
+  service:
+    type: ClusterIP
+    port: 80
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorNamespaceSelector: {}
+    retention: 7d
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+
+alertmanager:
+  enabled: true

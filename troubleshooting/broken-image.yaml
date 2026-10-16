@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudpulse-broken-image
+  namespace: cloudpulse
+  labels:
+    app: broken-image-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: broken-image-lab
+  template:
+    metadata:
+      labels:
+        app: broken-image-lab
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/cloudpulse-org/cloudpulse-backend:invalid-tag-v999
+          ports:
+            - containerPort: 8000

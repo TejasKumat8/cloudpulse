@@ -1,0 +1,20 @@
+replicaCount: 1
+
+frontend:
+  resources:
+    requests:
+      cpu: 25m
+      memory: 32Mi
+
+backend:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+ingress:
+  enabled: true
+  host: dev.cloudpulse.local
+
+hpa:
+  enabled: false

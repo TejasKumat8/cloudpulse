@@ -1,0 +1,13 @@
+apiVersion: v2
+name: cloudpulse
+description: CloudPulse - Enterprise DevOps Incident Management Platform Helm Chart
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - incident-management
+  - devops
+  - sre
+  - monitoring
+maintainers:
+  - name: Student Engineer
+    email: student@sst.scaler.com
