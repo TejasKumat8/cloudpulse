@@ -1,0 +1,7 @@
+# Example Terraform Variables (Copy to terraform.tfvars)
+# DO NOT commit real AWS secrets or credentials to version control.
+
+aws_region   = "ap-south-1"
+cluster_name = "cloudpulse-eks"
+environment  = "dev"
+vpc_cidr     = "10.30.0.0/16"
