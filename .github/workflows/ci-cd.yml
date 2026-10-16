@@ -55,6 +55,11 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+      - name: Set Lowercase Repository Owner
+        run: echo "OWNER_LC=${OWNER,,}" >> $GITHUB_ENV
+        env:
+          OWNER: '${{ github.repository_owner }}'
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -65,19 +70,19 @@ jobs:
       - name: Build Backend Docker Image
         run: |
           docker build \
-            --tag ghcr.io/${{ github.repository_owner }}/cloudpulse-backend:${{ github.sha }} \
+            --tag ghcr.io/${{ env.OWNER_LC }}/cloudpulse-backend:${{ github.sha }} \
             ./backend
 
       - name: Build Frontend Docker Image
         run: |
           docker build \
-            --tag ghcr.io/${{ github.repository_owner }}/cloudpulse-frontend:${{ github.sha }} \
+            --tag ghcr.io/${{ env.OWNER_LC }}/cloudpulse-frontend:${{ github.sha }} \
             ./frontend
 
       - name: Trivy Vulnerability Scan (Backend Image)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ghcr.io/${{ github.repository_owner }}/cloudpulse-backend:${{ github.sha }}
+          image-ref: ghcr.io/${{ env.OWNER_LC }}/cloudpulse-backend:${{ github.sha }}
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -87,7 +92,7 @@ jobs:
       - name: Trivy Vulnerability Scan (Frontend Image)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ghcr.io/${{ github.repository_owner }}/cloudpulse-frontend:${{ github.sha }}
+          image-ref: ghcr.io/${{ env.OWNER_LC }}/cloudpulse-frontend:${{ github.sha }}
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -96,8 +101,8 @@ jobs:
 
       - name: Push Container Images to GHCR
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/cloudpulse-backend:${{ github.sha }}
-          docker push ghcr.io/${{ github.repository_owner }}/cloudpulse-frontend:${{ github.sha }}
+          docker push ghcr.io/${{ env.OWNER_LC }}/cloudpulse-backend:${{ github.sha }}
+          docker push ghcr.io/${{ env.OWNER_LC }}/cloudpulse-frontend:${{ github.sha }}
 
   deploy:
     name: Deploy to Kubernetes via Helm
@@ -110,6 +115,11 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+
+      - name: Set Lowercase Repository Owner
+        run: echo "OWNER_LC=${OWNER,,}" >> $GITHUB_ENV
+        env:
+          OWNER: '${{ github.repository_owner }}'
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
@@ -135,13 +145,13 @@ jobs:
               --create-namespace \
               --set backend.tag=${{ github.sha }} \
               --set frontend.tag=${{ github.sha }} \
-              --set backend.image=ghcr.io/${{ github.repository_owner }}/cloudpulse-backend \
-              --set frontend.image=ghcr.io/${{ github.repository_owner }}/cloudpulse-frontend
+              --set backend.image=ghcr.io/${{ env.OWNER_LC }}/cloudpulse-backend \
+              --set frontend.image=ghcr.io/${{ env.OWNER_LC }}/cloudpulse-frontend
           else
             echo "Simulating Helm template verification..."
             helm template cloudpulse ./helm/cloudpulse \
               --set backend.tag=${{ github.sha }} \
               --set frontend.tag=${{ github.sha }} \
-              --set backend.image=ghcr.io/${{ github.repository_owner }}/cloudpulse-backend \
-              --set frontend.image=ghcr.io/${{ github.repository_owner }}/cloudpulse-frontend
+              --set backend.image=ghcr.io/${{ env.OWNER_LC }}/cloudpulse-backend \
+              --set frontend.image=ghcr.io/${{ env.OWNER_LC }}/cloudpulse-frontend
           fi
